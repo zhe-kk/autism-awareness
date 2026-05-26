@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>走進自閉症的世界 - 互動體驗特展</title>
+    <style>
+        :root {
+            --primary-blue: #7bc6e7;
+            --primary-yellow: #fff2a3;
+            --primary-pink: #ffc2cd;
+            --bg-color: #f7fafd;
+            --text-dark: #3a4750;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(123, 198, 231, 0.15);
+            padding: 30px;
+            overflow: hidden;
+            border: 3px solid #eef5f9;
+        }
+
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 標題與視覺 */
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            background: #f0f7fc;
+            padding: 10px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        /* 按鈕設計 */
+        .btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(123, 198, 231, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(123, 198, 231, 0.4);
+        }
+
+        /* 題目選項 */
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 14px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background: #f0f7fc;
+            border-color: var(--primary-blue);
+        }
+
+        .option-btn.selected {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            font-weight: bold;
+        }
+
+        /* 迷思專區卡片 */
+        .myth-card {
+            background: #fffdf3;
+            border: 2px solid var(--primary-yellow);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .myth-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+
+        .fact-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            color: #059669;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            font-size: 1.05rem;
+        }
+
+        /* 量表設計 */
+        .scale-container {
+            margin-bottom: 25px;
+        }
+        .scale-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            gap: 5px;
+        }
+        .scale-btn {
+            flex: 1;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 10px 5px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .scale-btn.selected {
+            background: #fce7f3;
+            border-color: #db2777;
+            color: #db2777;
+            font-weight: bold;
+        }
+
+        /* 進度條 */
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-blue);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+    <div class="step-panel active" id="panel-welcome">
+        <h1>走進自閉症的世界</h1>
+        <p class="subtitle">不是不願意交流，而是感官接收頻率不同</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <p style="font-size: 1.1rem; color: #4a5568;">每個人接收世界的方式都不一樣<br><strong>理解，是友善的開始。</strong></p>
+            <p style="font-size: 0.9rem; color: #a0aec0; margin-top: 15px;">只需 2 分鐘，參與互動測驗，解鎖友善徽章！</p>
+        </div>
+        <button class="btn" onclick="nextStep('welcome')">開始探索之旅</button>
+    </div>
+
+    <div class="step-panel" id="panel-pretest">
+        <h1>【第一階段：日常大挑戰】</h1>
+        <p class="subtitle">如果是你，會怎麼做呢？</p>
+        <div id="pretest-container"></div>
+        <button class="btn" onclick="submitPretest()">查看分析並解鎖觀念</button>
+    </div>
+
+    <div class="step-panel" id="panel-education">
+        <h1>【第二階段：解密感官頻率】</h1>
+        <p class="subtitle">原來，事實是這樣的...</p>
+        
+        <div class="myth-card">
+            <div class="myth-header">❌ 迷思 1：自閉症等同於智力低下？</div>
+            <div class="fact-header">💡 事實：不是智力低下，每位的能力不同</div>
+            <p style="font-size: 0.95rem; color: #4a5568; padding-left: 24px;">自閉症光譜非常廣。有些人在數理、記憶、藝術等特定領域擁有驚人天賦；每位特質者的能力分佈都完全不同，絕不能一概而論。</p>
+        </div>
+
+        <div class="myth-card">
+            <div class="myth-header">❌ 迷思 2：他們常常故意鬧脾氣、摀耳朵？</div>
+            <div class="fact-header">💡 事實：感官敏感或遲鈍</div>
+            <p style="font-size: 0.95rem; color: #4a5568; padding-left: 24px;">他們的大腦處理環境訊息時像充滿雜訊的收音機。夜市的叫賣聲、日光燈的頻閃，對他們而言可能像雷鳴般痛苦。他們需要的是「減少環境刺激」。</p>
+        </div>
+
+        <div class="myth-card">
+            <div class="myth-header">❌ 迷思 3：他們不理人，是因為故意冷淡？</div>
+            <div class="fact-header">💡 事實：不是故意冷淡，他們也渴望被理解</div>
+            <p style="font-size: 0.95rem; color: #4a5568; padding-left: 24px;">自閉症特質者內心深處同樣渴望友誼與陪伴。只是他們可能不擅長解讀複雜的社交表情、眼神，或是表達方式與普通人不同。</p>
+        </div>
+
+        <div class="myth-card">
+            <div class="myth-header">❌ 迷思 4：他們只是個性太內向，長大就好了？</div>
+            <div class="fact-header">💡 事實：不是疾病，是一種看不見的大腦運作特質</div>
+            <p style="font-size: 0.95rem; color: #4a5568; padding-left: 24px;">自閉症不是可以治癒的「疾病」，而是天生獨特的大腦運作模式。與他們溝通時，給予「清楚、具體」的指令（例如：說“2點集合”而非“隨便幾點”）能帶來極大幫助。</p>
+        </div>
+
+        <button class="btn" onclick="nextStep('education')">我已理解，進行最終驗收</button>
+    </div>
+
+    <div class="step-panel" id="panel-posttest">
+        <h1>【第三階段：友善觀念驗收】</h1>
+        <p class="subtitle">吸收新知後，挑戰看看吧！</p>
+        <div id="posttest-container"></div>
+        <hr style="border: 0; border-top: 2px dashed #e2e8f0; margin: 30px 0;">
+        <h2 style="font-size: 1.2rem; color: #db2777; margin-bottom: 15px; text-align: center;">💖 社區友善接納度調查</h2>
+        <div id="scale-container"></div>
+        <button class="btn" style="background-color: #db2777; box-shadow: 0 4px 10px rgba(219,39,119,0.3);" onclick="submitFinal()">提交測驗，建立友善社區</button>
+    </div>
+
+    <div class="step-panel" id="panel-result">
+        <h1>🎉 完成體驗！</h1>
+        <p class="subtitle">感謝您為友善社區邁出第一步</p>
+        <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;">
+            <p style="font-size: 1.1rem; margin-bottom: 10px;">您的認知成長紀錄：</p>
+            <h3 style="font-size: 1.5rem; color: #16a34a;" id="score-report">前測：- 分 ➔ 後測：- 分</h3>
+            <p style="font-size: 0.9rem; color: #15803d; margin-top: 10px;" id="growth-text">哇！觀念大幅進步，您已經掌握了「感官頻率不同」的精髓！</p>
+        </div>
+        <blockquote style="background: #f8fafc; border-left: 4px solid #cbd5e1; padding: 15px; font-size: 0.9rem; color: #64748b; text-align: left; border-radius: 0 12px 12px 0;">
+            系統已成功將您的匿名數據上傳至社區後台。本場域將依據整體居民的接納意願，積極推動更具體的友善空間與標籤去除計畫。謝謝您的參與！
+        </blockquote>
+    </div>
+</div>
+
+<script>
+    // 數據儲存結構
+    const userData = {
+        preTest: {},
+        postTest: {},
+        acceptance: {}
+    };
+
+    // 題目庫
+    const preQuestions = [
+        { id: 'pre1', q: '1. 在熱鬧的夜市裡，你看到一位同學突然雙手緊緊捂住耳朵、蹲在地上，表情顯得非常痛苦。你覺得他怎麼了？', options: { A: '他可能在無理取鬧，想吸引注意。', B: '周遭的聲音和光線對他來說可能像噪音干擾，他正在經歷感官過載。', C: '他只是心情不好，過一下就沒事了。' }, correct: 'B' },
+        { id: 'pre2', q: '2. 當你嘗試和新來的同事說話時，他一直看著旁邊的桌角，很少直視你的眼睛，回答也很簡短。你的想法是？', options: { A: '他真沒禮貌，看來不想理我。', B: '他的眼神接觸較少、不擅長社交表達，這可能是他的特質，並非故意冷淡。', C: '他一定做賊心虛，不敢看人。' }, correct: 'B' },
+        { id: 'pre3', q: '3. 分組報告時，你對組員說：「明天隨便幾點集合都可以。」結果某位組員非常焦慮，一直追問到底是幾點幾分。為什麼會這樣？', options: { A: '他故意找碴，開不起玩笑。', B: '他可能需要更明確、具體的溝通（例如：明天下午2點），「隨便」會讓他無所適從。', C: '他太死板了，缺乏彈性。' }, correct: 'B' }
+    ];
+
+    const postQuestions = [
+        { id: 'post1', q: '1. 關於自閉症的智力表現，以下何者正確？', options: { A: '自閉症一定都是智力低下。', B: '自閉症每位的能力都不同，不能與智力低下劃上等號。', C: '自閉症全都是天才。' }, correct: 'B' },
+        { id: 'post2', q: '2. 當自閉症特質者在公共場合因環境刺激感到不適時，我們可以怎麼做？', options: { A: '大聲指責或強迫他適應環境。', B: '保持多一點耐心，並協助減少環境刺激（如引導至安靜處）。', C: '當作沒看到，快步離開。' }, correct: 'B' },
+        { id: 'post3', q: '3. 與自閉症特質者溝通時，哪種方式最有效？', options: { A: '說話語氣充滿隱喻與暗示。', B: '給予清楚、具體的指令或溝通內容（例如明確時間與步驟）。', C: '乾脆不要跟他講話，以免說錯話。' }, correct: 'B' }
+    ];
+
+    const scaleQuestions = [
+        { id: 'acc1', q: '1. 我願意在日常生活中，對具有自閉症特質的人保持更多耐心。' },
+        { id: 'acc2', q: '2. 如果班上或職場有自閉症特質的夥伴，我願意主動採取更具體清楚的方式與他溝通。' },
+        { id: 'acc3', q: '3. 我支持社區推動對自閉症更友善的空間與宣導活動。' }
+    ];
+
+    // 初始化題目渲染
+    function initQuiz() {
+        // 渲染前測
+        const preContainer = document.getElementById('pretest-container');
+        preQuestions.forEach(q => {
+            preContainer.innerHTML += `
+                <div class="question-title">${q.q}</div>
+                <div class="options-group">
+                    ${Object.entries(q.options).map(([key, val]) => `<button class="option-btn" data-qid="${q.id}" data-ans="${key}" onclick="selectOption(this, '${q.id}', '${key}')">${key}) ${val}</button>`).join('')}
+                </div>
+            `;
+        });
+
+        // 渲染後測
+        const postContainer = document.getElementById('posttest-container');
+        postQuestions.forEach(q => {
+            postContainer.innerHTML += `
+                <div class="question-title">${q.q}</div>
+                <div class="options-group">
+                    ${Object.entries(q.options).map(([key, val]) => `<button class="option-btn" data-qid="${q.id}" data-ans="${key}" onclick="selectOption(this, '${q.id}', '${key}')">${key}) ${val}</button>`).join('')}
+                </div>
+            `;
+        });
+
+        // 渲染接納度量表
+        const scaleContainer = document.getElementById('scale-container');
+        scaleQuestions.forEach(q => {
+            scaleContainer.innerHTML += `
+                <div class="scale-container">
+                    <div style="font-weight:bold; font-size:0.95rem; color:#4a5568;">${q.q}</div>
+                    <div class="scale-options">
+                        ${[1,2,3,4,5].map(num => {
+                            let label = num===1 ? '非常不同意' : num===5 ? '非常同意' : num;
+                            return `<button class="scale-btn" data-qid="${q.id}" data-score="${num}" onclick="selectScale(this, '${q.id}', ${num})">${label}</button>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function selectOption(btn, qid, ans) {
+        document.querySelectorAll(`[data-qid="${qid}"]`).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        if(qid.startsWith('pre')) userData.preTest[qid] = ans;
+        else userData.postTest[qid] = ans;
+    }
+
+    function selectScale(btn, qid, score) {
+        document.querySelectorAll(`[data-qid="${qid}"]`).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        userData.acceptance[qid] = score;
+    }
+
+    // 步驟切換與進度條控制
+    function nextStep(currentStage) {
+        document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+        const progress = document.getElementById('progress');
+
+        if(currentStage === 'welcome') {
+            document.getElementById('panel-pretest').classList.add('active');
+            progress.style.width = '25%';
+        } else if(currentStage === 'pretest') {
+            document.getElementById('panel-education').classList.add('active');
+            progress.style.width = '55%';
+            window.scrollTo(0,0);
+        } else if(currentStage === 'education') {
+            document.getElementById('panel-posttest').classList.add('active');
+            progress.style.width = '85%';
+            window.scrollTo(0,0);
+        } else if(currentStage === 'final') {
+            document.getElementById('panel-result').classList.add('active');
+            progress.style.width = '100%';
+            window.scrollTo(0,0);
+        }
+    }
+
+    function submitPretest() {
+        if(Object.keys(userData.preTest).length < preQuestions.length) {
+            alert('請填寫完所有前測情境題再前往下一頁喔！');
+            return;
+        }
+        nextStep('pretest');
+    }
+
+    function submitFinal() {
+        if(Object.keys(userData.postTest).length < postQuestions.length || Object.keys(userData.acceptance).length < scaleQuestions.length) {
+            alert('請完整填寫後測與接納度量表，讓我們能收集完整的優化數據！');
+            return;
+        }
+
+        // 計算分數 (答對一題 33.3 分，最後一題補足 100)
+        let preScore = 0;
+        let postScore = 0;
+        preQuestions.forEach((q, i) => { if(userData.preTest[q.id] === q.correct) preScore += 33; });
+        postQuestions.forEach((q, i) => { if(userData.postTest[q.id] === q.correct) postScore += 33; });
+        if(preScore === 99) preScore = 100;
+        if(postScore === 99) postScore = 100;
+
+        // 顯示報告
+        document.getElementById('score-report').innerText = `前測：${preScore} 分 ➔ 後測：${postScore} 分`;
+        const growthText = document.getElementById('growth-text');
+        if(postScore > preScore) {
+            growthText.innerText = `太棒了！您的觀念進步了 ${postScore - preScore} 分，感謝您用更包容的心閱讀事實！`;
+        } else if (postScore === 100) {
+            growthText.innerText = `滿分！您原本就是一位充滿同理心的友善社區天使！`;
+        } else {
+            growthText.innerText = `感謝參與！每個人的理解角度不同，您的回饋對我們非常珍貴。`;
+        }
+
+        // 模擬數據上傳 API
+        sendDataToBackend(preScore, postScore, userData.acceptance);
+
+        nextStep('final');
+    }
+
+    function sendDataToBackend(pre, post, acc) {
+        const payload = {
+            timestamp: new Date().toISOString(),
+            preTestScore: pre,
+            postTestScore: post,
+            acceptanceScores: acc
+        };
+        
+        console.log("【後台數據上傳成功】", payload);
+        
+
+        fetch('https://script.google.com/macros/s/AKfycbxKW4byM437wveoUhFXI6eauxslhcaFHVwLfFolhYLpZ1-Em-01Lzmq3GnNYi-swdZP/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+    }
+
+    // 啟動
+    initQuiz();
+</script>
+
+</body>
+</html>
