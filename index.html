@@ -428,22 +428,30 @@
     }
 
     function sendDataToBackend(pre, post, acc) {
-        const payload = {
-            timestamp: new Date().toISOString(),
-            preTestScore: pre,
-            postTestScore: post,
-            acceptanceScores: acc
-        };
-        
-        console.log("【後台數據上傳成功】", payload);
-        
-
-        fetch('https://script.google.com/macros/s/AKfycbxKW4byM437wveoUhFXI6eauxslhcaFHVwLfFolhYLpZ1-Em-01Lzmq3GnNYi-swdZP/exec', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-    }
+    const payload = {
+        timestamp: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
+        preTestScore: pre,
+        postTestScore: post,
+        acceptanceScores: acc
+    };
+    
+    console.log("【準備上傳數據】", payload);
+    
+    // ⚠️ 請務必確認這裡的網址完整，最後是以 /exec 結尾，且沒有前後空格！
+    const apiUrl = https://script.google.com/macros/s/AKfycbxKW4byM437wveoUhFXI6eauxslhcaFHVwLfFolhYLpZ1-Em-01Lzmq3GnNYi-swdZP/exec;
+    
+    // 加入 mode: 'no-cors'，這是讓前端瀏覽器不管三七二十一，直接把封包丟給 Google 的秘訣
+    fetch(apiUrl, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(() => console.log('【發送動作已完成】請檢查試算表！'))
+    .catch(error => console.error('發送失敗，請檢查網路:', error));
+}
 
     // 啟動
     initQuiz();
