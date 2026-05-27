@@ -103,6 +103,7 @@
             font-weight: bold;
             margin-bottom: 15px;
             color: #2c3e50;
+            margin-top: 15px;
         }
 
         .options-group {
@@ -183,6 +184,7 @@
             border-radius: 8px;
             cursor: pointer;
             text-align: center;
+            transition: all 0.2s ease;
         }
         .scale-btn.selected {
             background: #fce7f3;
@@ -340,7 +342,7 @@
         scaleQuestions.forEach(q => {
             scaleContainer.innerHTML += `
                 <div class="scale-container">
-                    <div style="font-weight:bold; font-size:0.95rem; color:#4a5568;">${q.q}</div>
+                    <div style="font-weight:bold; font-size:0.95rem; color:#4a5568; margin-top:15px;">${q.q}</div>
                     <div class="scale-options">
                         ${[1,2,3,4,5].map(num => {
                             let label = num===1 ? '非常不同意' : num===5 ? '非常同意' : num;
@@ -402,15 +404,13 @@
             return;
         }
 
-        // 計算分數 (答對一題 33.3 分，最後一題補足 100)
         let preScore = 0;
         let postScore = 0;
-        preQuestions.forEach((q, i) => { if(userData.preTest[q.id] === q.correct) preScore += 33; });
-        postQuestions.forEach((q, i) => { if(userData.postTest[q.id] === q.correct) postScore += 33; });
+        preQuestions.forEach((q) => { if(userData.preTest[q.id] === q.correct) preScore += 33; });
+        postQuestions.forEach((q) => { if(userData.postTest[q.id] === q.correct) postScore += 33; });
         if(preScore === 99) preScore = 100;
         if(postScore === 99) postScore = 100;
 
-        // 顯示報告
         document.getElementById('score-report').innerText = `前測：${preScore} 分 ➔ 後測：${postScore} 分`;
         const growthText = document.getElementById('growth-text');
         if(postScore > preScore) {
@@ -421,37 +421,37 @@
             growthText.innerText = `感謝參與！每個人的理解角度不同，您的回饋對我們非常珍貴。`;
         }
 
-        // 模擬數據上傳 API
+        // 呼叫後台發送機制
         sendDataToBackend(preScore, postScore, userData.acceptance);
 
         nextStep('final');
     }
 
     function sendDataToBackend(pre, post, acc) {
-    const payload = {
-        timestamp: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
-        preTestScore: pre,
-        postTestScore: post,
-        acceptanceScores: acc
-    };
-    
-    console.log("【準備上傳數據】", payload);
-    
-    // ⚠️ 請務必確認這裡的網址完整，最後是以 /exec 結尾，且沒有前後空格！
-    const apiUrl = https://script.google.com/macros/s/AKfycbxKW4byM437wveoUhFXI6eauxslhcaFHVwLfFolhYLpZ1-Em-01Lzmq3GnNYi-swdZP/exec;
-    
-    // 加入 mode: 'no-cors'，這是讓前端瀏覽器不管三七二十一，直接把封包丟給 Google 的秘訣
-    fetch(apiUrl, {
-        method: 'POST',
-        mode: 'no-cors', 
-        headers: {
-            'Content-Type': 'text/plain'
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(() => console.log('【發送動作已完成】請檢查試算表！'))
-    .catch(error => console.error('發送失敗，請檢查網路:', error));
-}
+        const payload = {
+            timestamp: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
+            preTestScore: pre,
+            postTestScore: post,
+            acceptanceScores: acc
+        };
+        
+        console.log("【準備上傳數據】", payload);
+        
+        // ⚠️ 請在此處替換為你在 Google Apps Script 複製的「網路應用程式 URL」
+        const apiUrl = '請在此處替換為你的網路應用程式URL';
+        
+        // 使用 text/plain 與 no-cors 模式，確保強行穿透 Google Apps Script 的 CORS 防護
+        fetch(apiUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(() => console.log('【發送動作已完成】請確認試算表內是否成功新增資料！'))
+        .catch(error => console.error('發送失敗，請檢查網路狀態:', error));
+    }
 
     // 啟動
     initQuiz();
